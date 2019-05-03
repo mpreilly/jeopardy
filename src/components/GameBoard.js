@@ -21,7 +21,8 @@ class GameBoard extends Component {
     }
 
     componentDidMount() {
-        fetch('/games/2010-07-06', {method: 'GET'})
+        const url = '/games/' + this.props.date;
+        fetch(url, {method: 'GET'})
             .then(data => data.json())
             .then(json => this.setState({game: json}))
     }   
@@ -37,12 +38,22 @@ class GameBoard extends Component {
         if (this.state.questionsDone.size === 29) {
             console.log("jeopardy round over")
             this.setState({currentRound: "doubleJeopardy"})
+        } else if (this.state.questionsDone.size === 59) {
+            console.log("jeopardy round over")
+            this.setState({currentRound: "finalJeopardy"})
         }
 
         this.setState(prevState => ({questionsDone: prevState.questionsDone.add(category + value),
                                     questionInProgress: { round: round,
                                                             category: category,
                                                             value: value }}))
+
+        fetch('/answer', {
+            method: 'POST',
+            body: JSON.stringify({ round: round,
+                category: category,
+                value: value })
+        })
     }
 
     questionAnswered = (value, player) => {
