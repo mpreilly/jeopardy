@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row, Col } from "react-bootstrap";
+import { Col } from "react-bootstrap";
 
 class TopTile extends Component {
 
