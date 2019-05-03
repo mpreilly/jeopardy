@@ -33,6 +33,7 @@ class GameBoard extends Component {
     questionChosen = (round, category, value) => {
         console.log('Chosen: ' + category + " for " + value)
         console.log(this.state.game[round][category][value]["question"])
+        console.log(this.state.game[round][category][value]["answer"])
         if (this.state.questionsDone.size === 29) {
             console.log("jeopardy round over")
             this.setState({currentRound: "doubleJeopardy"})
@@ -50,6 +51,16 @@ class GameBoard extends Component {
         console.log(`${player} gets ${value}!`)
     }
 
+    questionAnsweredWrong = (value, player) => {
+        this.setState(prevState => ({[player]: prevState[player] - parseInt(value.substring(1)) }))
+        console.log(`${player} loses ${value}!`)
+    }
+
+    questionNotAnswered = () => {
+        this.setState(prevState => ({questionInProgress: {}}))
+
+    }
+
     render () {
         // if (!this.state.game.hasOwnProperty("jeopardy")) {
         //     fetch('localhost:3001/dates')
@@ -64,17 +75,25 @@ class GameBoard extends Component {
 
         if (this.state.questionInProgress.hasOwnProperty("round")) {
             return ( 
-            <div className="question-screen">
-                <div >
-                    {this.state.game[this.state.questionInProgress.round][this.state.questionInProgress.category][this.state.questionInProgress.value]["question"]} 
-                </div>
-                <div >
-                    <button className="player-button" onClick={() => this.questionAnswered(this.state.questionInProgress.value, "player1")}>Player 1</button>
-                    <button className="player-button" onClick={() => this.questionAnswered(this.state.questionInProgress.value, "player2")}>Player 2</button>
-                    <button className="player-button" onClick={() => this.questionAnswered(this.state.questionInProgress.value, "player3")}>Player 3</button>
-                </div>
+                <div className="question-screen">
+                    <div >
+                        {this.state.game[this.state.questionInProgress.round][this.state.questionInProgress.category][this.state.questionInProgress.value]["question"]} 
+                    </div>
+                    <div >
+                        <button className="player-button" onClick={() => this.questionAnswered(this.state.questionInProgress.value, "player1")}>Player 1 Right</button>
+                        <button className="player-button" onClick={() => this.questionAnswered(this.state.questionInProgress.value, "player2")}>Player 2 Right</button>
+                        <button className="player-button" onClick={() => this.questionAnswered(this.state.questionInProgress.value, "player3")}>Player 3 Right</button>
+                    </div>
 
-            </div>
+                    <div>
+                        <button className="player-button2" onClick={() => this.questionAnsweredWrong(this.state.questionInProgress.value, "player1")}>Player 1 Wrong</button>
+                        <button className="player-button2" onClick={() => this.questionAnsweredWrong(this.state.questionInProgress.value, "player2")}>Player 2 Wrong</button>
+                        <button className="player-button2" onClick={() => this.questionAnsweredWrong(this.state.questionInProgress.value, "player3")}>Player 3 Wrong</button>
+                    </div>
+                    <div>
+                        <button className="player-button2" onClick={() => this.questionNotAnswered()}>No Answer</button>
+                    </div>
+                </div>
             )
         }
 
