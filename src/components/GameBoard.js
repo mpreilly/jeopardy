@@ -16,7 +16,8 @@ class GameBoard extends Component {
             player1: 0,
             player2: 0,
             player3: 0,
-            currentRound: "jeopardy"
+            currentRound: "jeopardy",
+            firstBuzz: ""
         };
 
         this.socket = ""
@@ -31,6 +32,7 @@ class GameBoard extends Component {
         this.socket = socketIOClient.connect('http://localhost:3001/gameBoard');
         this.socket.on('new buzz', (data) => {
             console.log(data)
+            this.setState({firstBuzz: data["player"]})
         })
         // socket.on('news', (data) => {
         //     console.log(data);
@@ -42,6 +44,7 @@ class GameBoard extends Component {
         console.log('Chosen: ' + category + " for " + value)
         console.log(this.state.game[round][category][value]["question"])
         console.log("Answer: " + this.state.game[round][category][value]["answer"])
+
         if (this.state.questionsDone.size === 29) {
             console.log("jeopardy round over")
             this.setState({currentRound: "doubleJeopardy"})
@@ -55,7 +58,8 @@ class GameBoard extends Component {
                                 value: value }
 
         this.setState(prevState => ({questionsDone: prevState.questionsDone.add(category + value),
-                                    questionInProgress: currentQuestion }))
+                                    questionInProgress: currentQuestion,
+                                    firstBuzz: "" }))
 
         // fetch('/answer', {
         //     method: 'POST',
@@ -86,6 +90,7 @@ class GameBoard extends Component {
 
     readyForBuzz = () => {
         this.socket.emit('reset buzzer', {});
+        this.setState({firstBuzz: ""})
     }
 
     render () {
@@ -105,6 +110,9 @@ class GameBoard extends Component {
                 <div className="question-screen">
                     <div >
                         {this.state.game[this.state.questionInProgress.round][this.state.questionInProgress.category][this.state.questionInProgress.value]["question"]} 
+                    </div>
+                    <div>
+                        {this.state.firstBuzz ? `Player ${this.state.firstBuzz}!` : null}
                     </div>
                     <div >
                         <button className="player-button" onClick={() => this.questionAnswered(this.state.questionInProgress.value, "player1")}>Player 1 Right</button>
