@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TopTile from "./TopTile";
 import '../style/style.css';
 import { Container , Row, Col } from "react-bootstrap";
+import socketIOClient from "socket.io-client";
 
 class GameBoard extends Component {
 
@@ -16,8 +17,9 @@ class GameBoard extends Component {
             player2: 0,
             player3: 0,
             currentRound: "jeopardy"
-
         };
+
+        this.socket = ""
     }
 
     componentDidMount() {
@@ -25,35 +27,46 @@ class GameBoard extends Component {
         fetch(url, {method: 'GET'})
             .then(data => data.json())
             .then(json => this.setState({game: json}))
-    }   
 
-    loadGame = () => {
-
+        this.socket = socketIOClient.connect('http://localhost:3001/gameBoard');
+        this.socket.on('new buzz', (data) => {
+            console.log(data)
+        })
+        // socket.on('news', (data) => {
+        //     console.log(data);
+        //     socket.emit('my other event', { my: 'data' });
+        // });
     }
 
     questionChosen = (round, category, value) => {
         console.log('Chosen: ' + category + " for " + value)
         console.log(this.state.game[round][category][value]["question"])
-        console.log(this.state.game[round][category][value]["answer"])
+        console.log("Answer: " + this.state.game[round][category][value]["answer"])
         if (this.state.questionsDone.size === 29) {
             console.log("jeopardy round over")
             this.setState({currentRound: "doubleJeopardy"})
         } else if (this.state.questionsDone.size === 59) {
-            console.log("jeopardy round over")
+            console.log("double jeopardy round over")
             this.setState({currentRound: "finalJeopardy"})
         }
 
-        this.setState(prevState => ({questionsDone: prevState.questionsDone.add(category + value),
-                                    questionInProgress: { round: round,
-                                                            category: category,
-                                                            value: value }}))
+        const currentQuestion = { round: round,
+                                category: category,
+                                value: value }
 
-        fetch('/answer', {
-            method: 'POST',
-            body: JSON.stringify({ round: round,
-                category: category,
-                value: value })
-        })
+        this.setState(prevState => ({questionsDone: prevState.questionsDone.add(category + value),
+                                    questionInProgress: currentQuestion }))
+
+        // fetch('/answer', {
+        //     method: 'POST',
+        //     body: JSON.stringify({ round: round,
+        //         category: category,
+        //         value: value })
+        // })
+
+        this.socket.emit('new question', { question: this.state.game[round][category][value]["question"],
+                                            answer: this.state.game[round][category][value]["answer"]});
+
     }
 
     questionAnswered = (value, player) => {
@@ -69,7 +82,10 @@ class GameBoard extends Component {
 
     questionNotAnswered = () => {
         this.setState(prevState => ({questionInProgress: {}}))
+    }
 
+    readyForBuzz = () => {
+        this.socket.emit('reset buzzer', {});
     }
 
     render () {
@@ -104,6 +120,31 @@ class GameBoard extends Component {
                     <div>
                         <button className="player-button2" onClick={() => this.questionNotAnswered()}>No Answer</button>
                     </div>
+                    <div>
+                        <button className="player-button2" onClick={() => this.readyForBuzz()}>Ready For Buzz</button>
+                    </div>
+                </div>
+            )
+        }
+
+        if (this.state.currentRound === 'finalJeopardy') {
+            return (
+                <div className="question-screen">
+                    <div>
+                        {this.state.game.finalJeopardy["category"]}
+                    </div>
+                    <div>
+                        <button className="player-button" onClick={() => this.setState({currentRound: 'finalJeopardyQuestion'})}>Continue</button>
+                    </div>
+                </div>
+            )
+        } else if (this.state.currentRound === 'finalJeopardyQuestion') {
+            console.log("Answer: " + this.state.game.finalJeopardy["answer"])
+            return (
+                <div className="question-screen">
+                        <div>
+                            {this.state.game.finalJeopardy["question"]}
+                        </div>
                 </div>
             )
         }
