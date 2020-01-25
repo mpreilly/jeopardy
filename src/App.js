@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import GameBoard from './components/GameBoard'
-// import firebase from './Firebase'
+import firebase from './Firebase'
 
 class App extends Component {
   // const categories = ['Potent Potables', 'Letters That Begin With "G"',  'Who Reads', 'Let It Snow', 'State Your Name', 'Famous Oprahs']
