@@ -23,7 +23,7 @@ class GameBoard extends Component {
 
         // this.socket = ""
         this.db = firebase.firestore();
-        this.gameref = this.db.collection("games").doc(this.props.date);
+        this.gameref = this.db.collection("currentGames").doc("1");
     }
 
     componentDidMount() {
@@ -32,7 +32,8 @@ class GameBoard extends Component {
         //     .then(data => data.json())
         //     .then(json => this.setState({game: json}))
         // var docRef = this.db.collection("games").doc(this.props.date);
-        this.gameref.get().then(function(doc) {
+        var dataref = this.db.collection("games").doc(this.props.date);
+        dataref.get().then(function(doc) {
             if (doc.exists) {
                 // console.log("Document data:", doc.data());
                 return doc.data();
@@ -43,17 +44,17 @@ class GameBoard extends Component {
         }).then((data) => this.setState({game: data})).catch(function(error) {
             console.log("Error getting document:", error);
         });
-        
 
-        // this.socket = socketIOClient.connect('http://localhost:3001/gameBoard');
-        // this.socket.on('new buzz', (data) => {
-        //     console.log(data)
-        //     this.setState({firstBuzz: data["player"]})
-        // })
-        // socket.on('news', (data) => {
-        //     console.log(data);
-        //     socket.emit('my other event', { my: 'data' });
-        // });
+        this.gameref.onSnapshot((doc) => {
+            if (!doc.exists) {
+                // console.log("Document data:", doc.data());
+                return;
+            }
+            var data = doc.data()
+            if (data['buzzer'] === "1" || data['buzzer'] === "2" || data['buzzer'] === "3") {
+                this.setState({ firstBuzz: data['buzzer'] })
+            }
+        });
     }
 
     questionChosen = (round, category, value) => {
@@ -87,6 +88,9 @@ class GameBoard extends Component {
         // this.socket.emit('new question', { question: this.state.game[round][category][value]["question"],
         //                                     answer: this.state.game[round][category][value]["answer"]});
 
+        this.gameref.set({currentQuestion: this.state.game[round][category][value]["question"],
+                        currentAnswer: this.state.game[round][category][value]["answer"],
+                        buzzer: "closed"})
 
     }
 
@@ -108,6 +112,9 @@ class GameBoard extends Component {
     readyForBuzz = () => {
         // this.socket.emit('reset buzzer', {});
         this.setState({firstBuzz: ""})
+        this.gameref.set({
+            buzzer: "open"
+        }, { merge: true });
     }
 
     render () {

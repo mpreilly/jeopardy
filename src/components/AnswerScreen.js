@@ -21,10 +21,8 @@ class AnswerScreen extends Component {
         // const socket = socketIOClient.connect('http://192.168.86.37:3000/trebek');
         // const socket = socketIOClient.connect('localhost:3000/trebek');
         // socket.on("new question", data => this.setState(data))
-        var data = {}
         this.gameref.onSnapshot((doc) => {
-            console.log("Current data: ", doc.data());
-            data = doc.data()
+            var data = doc.data()
             this.setState({question: data['currentQuestion'], answer: data['currentAnswer']})
         });
     }
