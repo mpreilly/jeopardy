@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import TopTile from "./TopTile";
 import '../style/style.css';
 import { Container , Row, Col } from "react-bootstrap";
-import socketIOClient from "socket.io-client";
+// import socketIOClient from "socket.io-client";
+import firebase from '../Firebase'
 
 class GameBoard extends Component {
 
@@ -20,20 +21,35 @@ class GameBoard extends Component {
             firstBuzz: ""
         };
 
-        this.socket = ""
+        // this.socket = ""
+        this.db = firebase.firestore();
+        this.gameref = this.db.collection("games").doc(this.props.date);
     }
 
     componentDidMount() {
-        const url = '/games/' + this.props.date;
-        fetch(url, {method: 'GET'})
-            .then(data => data.json())
-            .then(json => this.setState({game: json}))
+        // const url = '/games/' + this.props.date;
+        // fetch(url, {method: 'GET'})
+        //     .then(data => data.json())
+        //     .then(json => this.setState({game: json}))
+        // var docRef = this.db.collection("games").doc(this.props.date);
+        this.gameref.get().then(function(doc) {
+            if (doc.exists) {
+                // console.log("Document data:", doc.data());
+                return doc.data();
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        }).then((data) => this.setState({game: data})).catch(function(error) {
+            console.log("Error getting document:", error);
+        });
+        
 
-        this.socket = socketIOClient.connect('http://localhost:3001/gameBoard');
-        this.socket.on('new buzz', (data) => {
-            console.log(data)
-            this.setState({firstBuzz: data["player"]})
-        })
+        // this.socket = socketIOClient.connect('http://localhost:3001/gameBoard');
+        // this.socket.on('new buzz', (data) => {
+        //     console.log(data)
+        //     this.setState({firstBuzz: data["player"]})
+        // })
         // socket.on('news', (data) => {
         //     console.log(data);
         //     socket.emit('my other event', { my: 'data' });
@@ -68,8 +84,9 @@ class GameBoard extends Component {
         //         value: value })
         // })
 
-        this.socket.emit('new question', { question: this.state.game[round][category][value]["question"],
-                                            answer: this.state.game[round][category][value]["answer"]});
+        // this.socket.emit('new question', { question: this.state.game[round][category][value]["question"],
+        //                                     answer: this.state.game[round][category][value]["answer"]});
+
 
     }
 
@@ -89,7 +106,7 @@ class GameBoard extends Component {
     }
 
     readyForBuzz = () => {
-        this.socket.emit('reset buzzer', {});
+        // this.socket.emit('reset buzzer', {});
         this.setState({firstBuzz: ""})
     }
 

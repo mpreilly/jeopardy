@@ -3,6 +3,7 @@ import './App.css';
 import GameBoard from './components/GameBoard'
 import firebase from './Firebase'
 
+
 class App extends Component {
   // const categories = ['Potent Potables', 'Letters That Begin With "G"',  'Who Reads', 'Let It Snow', 'State Your Name', 'Famous Oprahs']
   constructor(props) {
@@ -15,9 +16,19 @@ class App extends Component {
   }
 
   componentDidMount () {
-    fetch("/dates", {method: 'GET'})
-      .then(data => data.json())
-      .then(json => this.setState({dates: json}))
+    var db = firebase.firestore();
+    var dates = []
+    db.collection("games").get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        console.log(`${doc.id} => ${doc.data()}`);
+        dates.push(doc.id)
+      });
+      return dates
+    }).then((dates) => this.setState({dates: dates}))
+
+    // fetch("/dates", {method: 'GET'})
+    //   .then(data => data.json())
+    //   .then(json => this.setState({dates: json}))
   }
 
   render () {
