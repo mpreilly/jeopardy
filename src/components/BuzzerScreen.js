@@ -11,7 +11,8 @@ class BuzzerScreen extends Component {
     }
 
     componentDidMount() {
-        this.socket = socketIOClient.connect('http://192.168.86.37:3000/buzzer');
+        // this.socket = socketIOClient.connect('http://192.168.86.37:3000/buzzer');
+        this.socket = socketIOClient.connect('localhost:3000/buzzer');
         this.socket.on("buzzer on", data => this.setState({ready: true}))
         this.socket.on("buzzer off", data => this.setState({ready: false}))
     }

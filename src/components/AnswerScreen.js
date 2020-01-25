@@ -14,7 +14,8 @@ class AnswerScreen extends Component {
     }
 
     componentDidMount() {
-        const socket = socketIOClient.connect('http://192.168.86.37:3000/trebek');
+        // const socket = socketIOClient.connect('http://192.168.86.37:3000/trebek');
+        const socket = socketIOClient.connect('localhost:3000/trebek');
         socket.on("new question", data => this.setState(data))
     }
 

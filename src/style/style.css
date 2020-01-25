@@ -23,12 +23,12 @@
 
 .player-button {
     margin: 1em 5px;
-    font-size: 0.75em
+    font-size: 0.5em
 }
 
 .player-button2 {
     margin: 0 5px;
-    font-size: 0.75em
+    font-size: 0.5em
 }
 
 .scores {
@@ -61,4 +61,8 @@
     font-size: 2em;
     border: 0;
     margin: 0
+}
+
+.first-buzz {
+    color: #FFCC00;
 }

@@ -111,7 +111,7 @@ class GameBoard extends Component {
                     <div >
                         {this.state.game[this.state.questionInProgress.round][this.state.questionInProgress.category][this.state.questionInProgress.value]["question"]} 
                     </div>
-                    <div>
+                    <div className="first-buzz">
                         {this.state.firstBuzz ? `Player ${this.state.firstBuzz}!` : null}
                     </div>
                     <div >
@@ -152,6 +152,17 @@ class GameBoard extends Component {
                 <div className="question-screen">
                         <div>
                             {this.state.game.finalJeopardy["question"]}
+                        </div>
+                        <div>
+                            <button className="player-button" onClick={() => this.setState({currentRound: 'finalJeopardyAnswer'})}>Show Answer</button>
+                        </div>
+                </div>
+            )
+        } else if (this.state.currentRound === 'finalJeopardyAnswer') {
+            return (
+                <div className="question-screen">
+                        <div>
+                            {this.state.game.finalJeopardy["answer"]}
                         </div>
                 </div>
             )
