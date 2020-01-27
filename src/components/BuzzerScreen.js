@@ -10,7 +10,7 @@ class BuzzerScreen extends Component {
 
         // this.socket = ""
         this.db = firebase.firestore();
-        this.gameref = this.db.collection("currentGames").doc("1");
+        this.gameref = this.db.collection("currentGames").doc(this.props.gameCode);
     }
 
     componentDidMount() {

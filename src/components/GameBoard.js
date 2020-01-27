@@ -23,7 +23,7 @@ class GameBoard extends Component {
 
         // this.socket = ""
         this.db = firebase.firestore();
-        this.gameref = this.db.collection("currentGames").doc("1");
+        this.gameref = this.db.collection("currentGames").doc(this.props.gameCode);
     }
 
     componentDidMount() {
@@ -202,17 +202,17 @@ class GameBoard extends Component {
         return (
             <Container style={{backgroundColor: "gray", marginTop: "0.5em", padding: "0.5em"}}>
                 <Row style={{display: "flex", flexWrap: "wrap", minHeight: "10em", marginBottom:"-3em"}}>
-                    {Object.keys(this.state.game[this.state.currentRound]).map((catName) => {
-                        return (<TopTile category={catName} />)
+                    {Object.keys(this.state.game[this.state.currentRound]).map((catName, index) => {
+                        return (<TopTile category={catName} key={index} />)
                     })}
                 </Row>
                 {
-                    values.map((value) => {
+                    values.map((value, index1) => {
                         return (
-                            <Row>
-                                {Object.keys(this.state.game[this.state.currentRound]).map((catName) => {
+                            <Row key={index1}>
+                                {Object.keys(this.state.game[this.state.currentRound]).map((catName, index2) => {
                                     return (
-                                        <Col>
+                                        <Col key={index2} >
                                             <button 
                                                 className="question-tile" 
                                                 onClick={() => this.questionChosen(this.state.currentRound, catName, value)}>
@@ -227,6 +227,11 @@ class GameBoard extends Component {
                     <Col>Player 1: ${this.state.player1}</Col>
                     <Col>Player 2: ${this.state.player2}</Col>
                     <Col>Player 3: ${this.state.player3}</Col>
+                </Row>
+                <Row className="scores">
+                    <Col>
+                        <h2>Game Code: {this.props.gameCode}</h2>
+                    </Col>
                 </Row>
 
             </Container>

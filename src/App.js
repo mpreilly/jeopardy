@@ -20,7 +20,6 @@ class App extends Component {
     var dates = []
     db.collection("games").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
         dates.push(doc.id)
       });
       return dates
@@ -36,16 +35,16 @@ class App extends Component {
       return (
         <div>
           <p>please select date</p>
-          {this.state.dates.map((date) => {
+          {this.state.dates.map((date, index) => {
             return (
-              <button onClick={() => {this.setState({date: date})}}>{date}</button>
+              <button key={index} onClick={() => {this.setState({date: date})}}>{date}</button>
             )
           })}
         </div>
       )
     } else {
       return (
-        <GameBoard date={this.state.date}/>
+        <GameBoard date={this.state.date} gameCode={this.props.gameCode} />
       );
     }
     
