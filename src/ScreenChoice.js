@@ -2,7 +2,13 @@ import React, { Component } from 'react';
 import App from './App';
 import BuzzerScreen from './components/BuzzerScreen';
 import AnswerScreen from './components/AnswerScreen';
-import firebase from './Firebase'
+import firebase from './Firebase';
+import { Box,
+        Button,
+        Form,
+        FormField,
+        Grommet,
+        TextInput } from 'grommet';
 
 
 class ScreenChoice extends Component {
@@ -21,6 +27,18 @@ class ScreenChoice extends Component {
   }
 
   handleSubmit = (event) => {
+    if (this.state.gameCode.length === 0) {
+      alert("please enter a game code, or click \"Create New Game\"");
+      event.preventDefault();
+      return;
+    }
+
+    if (this.state.gameCode.length !== 4) {
+      alert("All game codes are 4 characters long.\nPlease enter a valid game code, or click \"Create New Game\".");
+      event.preventDefault();
+      return;
+    }
+
     let gameref = this.db.collection("currentGames").doc(this.state.gameCode);
     gameref.get().then((doc) => {
       if (!doc.exists) {
@@ -69,33 +87,113 @@ class ScreenChoice extends Component {
   }
 
   render () {
+    const theme = {
+      global: {
+        colors: {
+          jBlue: '#060CE9',
+          jGold: '#FFCC00'
+        },
+        font: {
+          family: 'Roboto',
+          size: '14px',
+          height: '20px',
+        },
+        focus: {
+          border: {
+            color: '#FFCC00'
+          }
+        },
+      },
+    };
+
     if (!this.state.gameCodeSet) {
       return (
-        <div>
-          <h1>Enter Game Code or Start New Game</h1>
-          <form onSubmit={this.handleSubmit}>
-            <label>
-              Game Code:
-              <input type="text" value={this.state.gameCode} onChange={this.handleChange} />
-            </label>
-            <input type="submit" value="Submit" />
-            {/* <button onClick={() => {this.setState({gameCodeSet: true})}}>Go</button> */}
-          </form>
-          <button onClick={() => this.createGame()}>Create New Game</button>
-        </div>
+        <Grommet theme={theme} full>
+          <Box fill>
+            {/* <Box pad="medium" alignSelf="center" animation="fadeIn" width="medium"> */}
+            <Box  flex overflow={{ horizontal: 'hidden' }} align='center' justify='center'>
+              <Box 
+                width='medium'
+                background='light-2'
+                elevation='small'
+                align='center'
+                justify='center'
+                border={{ color: 'jBlue', size: 'large' }}
+                pad="medium"
+                round="medium"
+              >
+                <h6>Enter Game Code or Start New Game</h6>
+                <Form onSubmit={this.handleSubmit}>
+                  {/* <label>
+                    Game Code:
+                    <input type="text" value={this.state.gameCode} onChange={this.handleChange} />
+                  </label> */}
+                  {/* <FormField name="gameCode" label="Game Code" /> */}
+                  <Box direction="row" pad="medium" gap="xsmall">
+                    <TextInput
+                      placeholder="Game Code"
+                      value={this.state.gameCode}
+                      onChange={this.handleChange}
+                    />
+                    {this.state.gameCode.length === 4 ? <Button primary type="submit" label="Go" color='jGold'/> : <Button type="submit" label="Go" color='jGold'/>}
+                    {/* <Button type="submit" label="Go" color='jGold'/> */}
+                  </Box>
+                  
+                  {/* <input type="submit" value="Submit" /> */}
+                  {/* <button onClick={() => {this.setState({gameCodeSet: true})}}>Go</button> */}
+                </Form>
+                <Box  >
+                  {this.state.gameCode.length !== 4 ? <Button primary onClick={() => this.createGame()} label="Create New Game" color='jGold'/> : <Button onClick={() => this.createGame()} label="Create New Game" color='jGold'/> }
+                  {/* <Button onClick={() => this.createGame()} label="Create New Game" color='jGold'/> */}
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </Grommet>
       )
     }
 
     if (this.state.choice === "") {
       return (
-        <div>
-          <h1>Choose Screen</h1>
-          <button onClick={() => {this.setState({choice: "gameboard"})}}>Game Board</button>
-          <button onClick={() => {this.setState({choice: "buzzer1"})}}>Player 1</button>
-          <button onClick={() => {this.setState({choice: "buzzer2"})}}>Player 2</button>
-          <button onClick={() => {this.setState({choice: "buzzer3"})}}>Player 3</button>
-          <button onClick={() => {this.setState({choice: "trebek"})}}>Trebek</button>
-        </div>
+        <Grommet theme={theme} full>
+          <Box fill>
+            {/* <Box pad="medium" alignSelf="center" animation="fadeIn" width="medium"> */}
+            <Box  flex overflow={{ horizontal: 'hidden' }} align='center' justify='center'>
+              <Box 
+                width='medium'
+                elevation='small'
+                align='center'
+                justify='center'
+                border={{ color: 'jBlue', size: 'large' }}
+                pad="medium"
+                round="medium"
+                gap="small"
+              >
+                <h4>Choose Screen</h4>
+                <Button onClick={() => {this.setState({choice: "gameboard"})}} label="Game Board" color='jGold'/>
+                <Box direction="row" gap="xsmall">
+                  <Button onClick={() => {this.setState({choice: "buzzer1"})}} label="Player 1" color='jGold'/>
+                  <Button onClick={() => {this.setState({choice: "buzzer2"})}} label="Player 2" color='jGold'/>
+                  <Button onClick={() => {this.setState({choice: "buzzer3"})}} label="Player 3" color='jGold'/>
+                </Box>
+                <Button onClick={() => {this.setState({choice: "trebek"})}} label="Trebek" color='jGold'/>
+              </Box>
+            </Box>
+          </Box>
+        </Grommet>
+
+
+
+
+
+        // <div>
+        //   <h1>Choose Screen</h1>
+        //   <button onClick={() => {this.setState({choice: "gameboard"})}}>Game Board</button>
+        //   <button onClick={() => {this.setState({choice: "buzzer1"})}}>Player 1</button>
+        //   <button onClick={() => {this.setState({choice: "buzzer2"})}}>Player 2</button>
+        //   <button onClick={() => {this.setState({choice: "buzzer3"})}}>Player 3</button>
+        //   <button onClick={() => {this.setState({choice: "trebek"})}}>Trebek</button>
+        // </div>
       )
     } else if (this.state.choice === "gameboard") {
       return(<App gameCode={this.state.gameCode} />)
